@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy URL Shortener</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="../pub/img/ldkn.in.png">
+    <link rel="icon" type="image/x-icon" href="../pub/img/favicon.ico">
+</head>
+<body>
+    <nav class="teal">
+        <div class="header-container">
+            <div class="nav-wrapper">
+                <a href="#" class="brand-logo"><img src="../pub/img/ldkn.in.png"></a>
+                <div>Official URL Shortener <span>- perfect link sharing privacy - strong encryption</span></div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row">
+            <div class="col s12">
+                <div class="card">
+                    <div class="card-content">
+                        <span class="card-title">Shorten your URL</span>
+                        <form id="url-form">
+                            <div class="input-field">
+                                <input type="text" id="url" name="url" class="validate" placeholder="Enter URL">
+                                <label for="url">URL</label>
+                            </div>
+                            <button class="btn waves-effect waves-light" type="submit">Shorten</button>
+                        </form>
+                    </div>
+                    <div id="shortUrlDisplay"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
+

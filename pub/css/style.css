@@ -1,0 +1,187 @@
+html {
+    height: 100%;
+    box-sizing: border-box;
+    font-family: -apple-system,system-ui,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Fira Sans,Ubuntu,Oxygen,Oxygen Sans,Cantarell,Droid Sans,Apple Color Emoji,Segoe UI Emoji,Segoe UI Emoji,Segoe UI Symbol,Lucida Grande,Helvetica,Arial,sans-serif;
+  }
+  
+  body {
+    background-image: url('../img/default.jpg');
+    background-size: cover;
+    background-position: center;
+    height: 100%;
+    box-sizing: border-box;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    width: 100%;
+    flex-flow: column;
+  }
+  
+  input[type="text"], button {
+    display: block;
+    margin: 10px auto;
+    padding: 10px;
+    font-size: 18px;
+  }
+  
+   .container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+  
+  .header-container {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    flex-flow: row;
+    padding: 0 100px;
+  }
+
+  nav {
+    margin-bottom: 20px;
+  }
+  
+  nav .nav-wrapper {
+    position: relative;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    width: 90%;
+    margin: 0 auto;
+  }
+  
+  .teal {
+    background-color: #fff !important;
+    color: #0A66C2;
+    width: 100%;
+  }
+
+  a.brand-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-flow: row;
+    color: #000;
+  }
+
+  .brand-logo img {
+    width: 40px;
+  }
+  
+  .card {
+    margin-top: 20px;
+    min-width: 800px;
+  }
+  
+  .card-title {
+    font-size: 24px;
+  }
+  
+  input[type="text"] {
+    width: 100%;
+  }
+  
+  div.input-field {
+    width: 80%;
+  }
+  
+  .btn {
+    margin-top: 20px;
+    background-color: #2196F3;
+  }
+  
+  .btn:hover {
+    background-color: #1976D2;
+  }
+  
+  .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  #url-form {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  nav .brand-logo {
+    position: absolute;
+    top: 12px;
+    left: 100px;
+  }
+  
+  #shortUrlDisplay {
+    padding: 40px 20px;
+    text-align: center;
+    font-family: Roboto;
+    font-size: 20px;
+    margin-top: -40px;
+    font-weight: lighter;
+    position: relative;
+  }
+  
+  #shortUrlCopy {
+    color: #8282ff;
+    font-family: Verdana;
+    border-bottom: 1px solid;
+    padding-bottom: 5px;
+    margin: 15px;
+    cursor: pointer;
+    cursor: hand;
+  }
+  
+  #copySymbol {
+    color: grey;
+    opacity: 0.2;
+  }
+   
+  #shortUrlDisplay > div {
+    font-size: 14px;
+    color: #919191;
+    position: absolute;
+    text-align: center;
+    left: 48%;
+    top: 10px;
+    transition: all ease 1s;
+  }
+
+  .btn, .btn-large, .btn-small, .btn:focus, .btn-large:focus, .btn-small:focus, .btn-floating:focus  {
+    background-color: #0A66C2;
+  }
+
+  .btn:hover, .btn-large:hover, .btn-small:hover {
+    background-color: rgb(183, 177, 254);
+  }
+
+  @media (max-width: 1200px) {
+    .nav-wrapper > div > span {
+      display: none;
+    }
+
+    .header-container {
+      padding: 0 15px;
+      justify-content: center;
+    }
+
+    .container > div.row {
+      width: 95%;
+      margin: 0 auto;
+    }
+
+    .card {
+      min-width: 0;
+    }
+
+    #url-form {
+      flex-flow: column;
+    }
+
+    nav .brand-logo {
+      top: 8px;
+      left: 0px;
+    }
+  }
