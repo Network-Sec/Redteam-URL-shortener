@@ -7,10 +7,10 @@ You only need to setup a mongoDB and can start sharing links, then log the IP.
 It's got `responsive` CSS for desktop and mobile.
 
 ### Desktop
-![](urls.jpg)
+![](urls.JPG)
 
 ### Mobile
-![](urls_mob.jpg)
+![](urls_mob.JPG)
 
 
 
