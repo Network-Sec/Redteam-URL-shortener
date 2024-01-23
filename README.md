@@ -18,6 +18,10 @@ It's got `responsive` CSS for desktop and mobile.
 ### Mobile
 ![](urls_mob.JPG)
 
+### Copy Button
+and different Background
+
+![](url_shortener.JPG)
 
 # About
 This is a Url Shortener based on `nodejs`, `express`, `mongoDB` and `nginx`. It's codebase is small and should provide you with both, a ready-to-use RedTeam tool as well as a starting point to work out your custom tool. 
