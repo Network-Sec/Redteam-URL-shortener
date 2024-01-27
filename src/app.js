@@ -45,10 +45,10 @@ const blacklist = [
   'favicon.ico'
 ];
 
-function mergeCookies(req, existingObject) {
+function mergeCookies(req, fp) {
   // Parse cookies from request headers
   const cookies = req.headers.cookie;
-  if (!cookies) return existingObject;
+  if (!cookies) return fp;
 
   const parsedCookies = cookies.split(';').map(cookie => {
       const parts = cookie.split('=');
@@ -59,8 +59,8 @@ function mergeCookies(req, existingObject) {
   });
 
   // Merge parsed cookies into the existing object
-  existingObject.fp.cookies = existingObject.fp.cookies.concat(parsedCookies);
-  return existingObject;
+  fp.cookies = fp.cookies.concat(parsedCookies);
+  return fp;
 }
 
 // Generate random shortUrl
