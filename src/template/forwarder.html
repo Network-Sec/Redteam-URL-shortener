@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="css/style.css">
+  <title>LD Transparent Forwarder Gate</title>
+  <script src="/pub/js/main.js?v=0.2.2"></script>
+</head>
+<body id="forwarder">
+    <script>
+        const shortUrl = "{{shortUrl}}"; 
+        window.onload = async function() {
+            if (shortUrl) {
+                const fp = await getFingerprintData(); 
+
+                const response = await fetch('/process-fp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ shortUrl, fp })
+                });
+
+                const result = await response.json();
+                if (result.redirectUrl) {
+                    console.log('Redirecting to: ', result.redirectUrl);
+                    window.location.href = result.redirectUrl;
+                }
+            } else {
+                console.error('Short URL parameter is missing');
+            }
+        };
+    </script>
+</body>
+</html>

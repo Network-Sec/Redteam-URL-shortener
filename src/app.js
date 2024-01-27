@@ -6,6 +6,9 @@ const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
+const fs = require('fs');
+const path = require('path');
+
 // const rateLimit = require('express-rate-limit'); // Added for rate limiting
 
 dotenv.config();
@@ -37,7 +40,28 @@ const blacklist = [
   '/',
   '/imprint',
   '/shorten',
+  'process-fp',
+  'undefined',
+  'favicon.ico'
 ];
+
+function mergeCookies(req, existingObject) {
+  // Parse cookies from request headers
+  const cookies = req.headers.cookie;
+  if (!cookies) return existingObject;
+
+  const parsedCookies = cookies.split(';').map(cookie => {
+      const parts = cookie.split('=');
+      return {
+          name: parts[0].trim(),
+          value: parts[1].trim()
+      };
+  });
+
+  // Merge parsed cookies into the existing object
+  existingObject.fp.cookies = existingObject.fp.cookies.concat(parsedCookies);
+  return existingObject;
+}
 
 // Generate random shortUrl
 function generateShortUrl() {
@@ -47,35 +71,15 @@ function generateShortUrl() {
 // Find URL in DB
 async function findUrlInDB(shortUrl) {
   try {
-    return await Url.findOne({ shortUrl });
+    console.log('Searching for shortUrl:', shortUrl);
+    return await Url.findOne({ "shortUrl": shortUrl });
   } catch (err) {
     console.log('DB Error:', err);
     return null;
   }
 }
 
-// URL shortening logic
-app.post('/shorten', async (req, res) => {
-  const originalUrl = req.body.url;
-  const creatorIp = req.headers['x-forwarded-for'];
-
-  let shortUrl;
-  do {
-    shortUrl = generateShortUrl();
-  } while (await findUrlInDB(shortUrl));
-
-  const urlData = new Url({
-    originalUrl,
-    shortUrl,
-    creatorIp,
-    createdAt: new Date(),
-  });
-  await urlData.save();
-
-  res.json({ shortUrl });
-});
-
-// URL forwarding
+// URL forwarding with fingerprinting page
 app.use('/:shortUrl', async (req, res, next) => {
   const { shortUrl } = req.params;
 
@@ -85,20 +89,103 @@ app.use('/:shortUrl', async (req, res, next) => {
 
   const existingUrl = await findUrlInDB(shortUrl);
   if (existingUrl) {
-    existingUrl.visitorIps.push({
-      ip: req.headers['x-forwarded-for'],
-      date: new Date(),
-    });
-    await existingUrl.save();
+    // Read the HTML file
+    fs.readFile(path.join(__dirname, 'template', 'forwarder.html'), 'utf8', (err, data) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).send('Server Error');
+      }
 
-    var redirect_target = existingUrl.originalUrl;
-    if (! redirect_target.startsWith("http")) {
-        redirect_target = "https://" + redirect_target;
-    }
-    return res.redirect(redirect_target);
+      const updatedHtml = data.replace('{{shortUrl}}', shortUrl);
+
+      res.send(updatedHtml);
+    });
+  } else {
+    next(); // Proceed to 404 or other handling
+  }
+});
+
+// URL shortening logic
+app.post('/shorten', async (req, res) => {
+  let { originalUrl, fp } = req.body;
+  const creatorIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  
+  if (!originalUrl || originalUrl.indexOf('ldkn.in') != -1) {
+    return res.status(400).json({ message: 'Invalid URL' });
   }
 
-  next();
+  if (fp) fp = mergeCookies(req, fp);
+  
+  // Validate URL and add https:// if missing
+  if (!originalUrl.match(/^(https?:\/\/)/)) {
+    originalUrl = 'https://' + originalUrl;
+  }
+
+  let shortUrl;
+  do {
+    shortUrl = generateShortUrl();
+  } while (await findUrlInDB(shortUrl));
+
+  // Construct FP_Short and FP_Complete objects
+  const Creator_FP_Short = {
+    webGL: fp.webGL,
+    canvas: fp.canvas,
+    audio: fp.audio,
+    clientRects: fp.clientRects
+  };
+
+  const Creator_FP_Complete = {
+    ...fp,
+    ipAddress: creatorIp,
+    dateTime: new Date().toISOString()
+  };
+
+  const urlData = new Url({
+    originalUrl,
+    shortUrl,
+    creatorIp,
+    createdAt: new Date(),
+    Creator_FP_Short,
+    Creator_FP_Complete
+  });
+
+  await urlData.save();
+
+  res.json({ shortUrl });
+});
+
+
+// Endpoint to process fingerprint data and redirect
+app.post('/process-fp', async (req, res) => {
+  let { shortUrl, fp } = req.body;
+  const visitorIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+  if (fp) fp = mergeCookies(req, fp);
+
+  const existingUrl = await findUrlInDB(shortUrl);
+  if (existingUrl) {
+    const visitorData = {
+      ip: visitorIp,
+      date: new Date(),
+      FP_Short: {
+        webGL: fp.webGL,
+        canvas: fp.canvas,
+        audio: fp.audio,
+        clientRects: fp.clientRects
+      },
+      FP_Complete: {
+        ...fp,
+        ipAddress: visitorIp,
+        dateTime: new Date().toISOString()
+      }
+    };
+
+    existingUrl.visitorIps.push(visitorData);
+    await existingUrl.save();
+    res.json({ redirectUrl: existingUrl.originalUrl });
+  } else {
+    res.status(404).json({ message: 'Short URL not found' });
+  }
 });
 
 app.get('/', (req, res) => {
@@ -107,6 +194,11 @@ app.get('/', (req, res) => {
 
 app.get('/imprint', (req, res) => {
   res.sendFile(__dirname + '/template/imprint.html');
+});
+
+// Catch-all route for invalid URLs
+app.get('*', (req, res) => {
+  res.redirect('/');
 });
 
 // Start the server
